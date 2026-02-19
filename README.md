@@ -1,0 +1,120 @@
+# Домашнее задание к занятию "`Введение в Terraform`" - `Лугинина Виктория`
+
+
+### Инструкция по выполнению домашнего задания
+
+   1. Сделайте `fork` данного репозитория к себе в Github и переименуйте его по названию или номеру занятия, например, https://github.com/имя-вашего-репозитория/git-hw или  https://github.com/имя-вашего-репозитория/7-1-ansible-hw).
+   2. Выполните клонирование данного репозитория к себе на ПК с помощью команды `git clone`.
+   3. Выполните домашнее задание и заполните у себя локально этот файл README.md:
+      - впишите вверху название занятия и вашу фамилию и имя
+      - в каждом задании добавьте решение в требуемом виде (текст/код/скриншоты/ссылка)
+      - для корректного добавления скриншотов воспользуйтесь [инструкцией "Как вставить скриншот в шаблон с решением](https://github.com/netology-code/sys-pattern-homework/blob/main/screen-instruction.md)
+      - при оформлении используйте возможности языка разметки md (коротко об этом можно посмотреть в [инструкции  по MarkDown](https://github.com/netology-code/sys-pattern-homework/blob/main/md-instruction.md))
+   4. После завершения работы над домашним заданием сделайте коммит (`git commit -m "comment"`) и отправьте его на Github (`git push origin`);
+   5. Для проверки домашнего задания преподавателем в личном кабинете прикрепите и отправьте ссылку на решение в виде md-файла в вашем Github.
+   6. Любые вопросы по выполнению заданий спрашивайте в чате учебной группы и/или в разделе “Вопросы по заданию” в личном кабинете.
+   
+Желаем успехов в выполнении домашнего задания!
+   
+### Дополнительные материалы, которые могут быть полезны для выполнения задания
+
+1. [Руководство по оформлению Markdown файлов](https://gist.github.com/Jekins/2bf2d0638163f1294637#Code)
+
+---
+
+### Задание 1
+
+
+1. ![task_1.png](https://github.com/victorialugi/terraform/blob/main/task_1.png)
+
+2. `personal.auto.tfvars`
+
+3. ![task_3.png](https://github.com/victorialugi/terraform/blob/main/task_3.png)
+
+4.
+   `a) Отсутствует имя ресурса у docker_image
+resource "docker_image" {Ошибка: ресурс объявлен только с типом, без второго обязательного аргумента — логического имени.
+Правило Terraform: каждый блок resource должен иметь два лейбла: тип и имя.
+Без имени Terraform не может сослаться на этот ресурс в других местах (например, в docker_container).
+
+b) Недопустимое имя ресурса у docker_container
+resource "docker_container" "1nginx" {Ошибка: имя ресурса начинается с цифры (1nginx).
+Правило Terraform: имя ресурса должно начинаться с буквы или подчёркивания, дальше допускаются буквы, цифры, подчёркивания и дефисы.
+Имена, начинающиеся с цифры, запрещены.`
+
+5.
+```
+
+resource "random_password" "random_string" {
+  length      = 16
+  special     = false
+  min_upper   = 1
+  min_lower   = 1
+  min_numeric = 1
+}
+
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = true
+}
+
+resource "docker_container" "nginx_example" {
+  image = docker_image.nginx.image_id
+
+  name  = "example-${random_password.random_string.result}"
+
+  ports {
+    internal = 80
+    external = 9090
+  }
+}
+
+```
+
+![task_5.png](https://github.com/victorialugi/terraform/blob/main/task_5.png)
+
+6. `Опасности ключа -auto-approve:
+
+a) Нет шанса посмотреть план и подтвердить изменения вручную
+b) Можно случайно удалить, перезаписать или сломать важные ресурсы
+c) Ошибка в коде → мгновенное разрушение инфраструктуры без возможности остановиться
+
+Зачем нужен ключ -auto-approve:
+
+a) В автоматизированных CI/CD-пайплайнах (GitHub Actions, GitLab CI, Jenkins и др.), где план уже проверен на предыдущем шаге
+b) Для быстрого тестирования и экспериментов в локальной/тестовой среде
+c) В скриптах автоматизации, когда некому вводить "yes"
+d) Когда изменения 100% предсказуемы и проверены заранее`
+
+![task_6.png](https://github.com/victorialugi/terraform/blob/main/task_6.png)
+
+7.
+
+   ```
+{
+  "version": 4,
+  "terraform_version": "1.14.3",
+  "serial": 13,
+  "lineage": "3baff4ea-ca5b-f943-239b-50a398bc7246",
+  "outputs": {},
+  "resources": [],
+  "check_results": null
+}
+
+```
+
+8.
+
+
+```
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = true
+}
+```
+
+`Атрибут keep_locally = true запрещает провайдеру удалять образ из локального хранилища Docker во время операции destroy.
+в официальной документации:
+keep_locally (Boolean)
+If true, then the Docker image won't be deleted on destroy operation. If this is false, it will delete the image from the docker local cache. Defaults to false.
+(https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/image#keep_locally)`
