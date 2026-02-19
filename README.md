@@ -24,13 +24,37 @@
 
 ### Задание 1
 
-![]()
 
-1. ``
+1. ![]()
 2. `personal.auto.tfvars`
-3. ``
-4. ``
-5. ``
+3. ![]()
+4. ```
+resource "random_password" "random_string" {
+  length      = 16
+  special     = false
+  min_upper   = 1
+  min_lower   = 1
+  min_numeric = 1
+}
+
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = true
+}
+
+resource "docker_container" "nginx_example" {
+  image = docker_image.nginx.image_id
+
+  name  = "example-${random_password.random_string.result}"
+
+  ports {
+    internal = 80
+    external = 9090
+  }
+}
+```
+
+5. ![]()
 6. ``
 7. ``
 8. ``
@@ -51,13 +75,7 @@
 5. `Заполните здесь этапы выполнения, если требуется ....`
 6. 
 
-```
-Поле для вставки кода...
-....
-....
-....
-....
-```
+
 
 `При необходимости прикрепитe сюда скриншоты
 ![Название скриншота 2](ссылка на скриншот 2)`
