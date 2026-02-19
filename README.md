@@ -113,7 +113,6 @@ resource "docker_image" "nginx" {
 }
 ```
 
-
 `Атрибут keep_locally = true запрещает провайдеру удалять образ из локального хранилища Docker во время операции destroy.
 в официальной документации:
 keep_locally (Boolean)
