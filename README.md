@@ -89,6 +89,7 @@ d) Когда изменения 100% предсказуемы и провере
 ![task_6.png](https://github.com/victorialugi/terraform/blob/main/task_6.png)
 
 7.
+
    ```
 {
   "version": 4,
@@ -104,12 +105,15 @@ d) Когда изменения 100% предсказуемы и провере
 
 8.
 
+
 ```
 resource "docker_image" "nginx" {
   name         = "nginx:latest"
   keep_locally = true
 }
 ```
+
+
 `Атрибут keep_locally = true запрещает провайдеру удалять образ из локального хранилища Docker во время операции destroy.
 в официальной документации:
 keep_locally (Boolean)
